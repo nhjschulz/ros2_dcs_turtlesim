@@ -1,6 +1,7 @@
 #VRML_SIM R2023b utf8
 
 EXTERNPROTO "https://raw.githubusercontent.com/BlueAndi/RadonUlzer/release/v2.0.x/webots/protos/ZumoComSystem.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/BlueAndi/RadonUlzer/release/v2.0.x/webots/protos/Zumo32U4.proto"
 
 WorldInfo {
   info [
@@ -11,15 +12,12 @@ WorldInfo {
 }
 Viewpoint {
 }
-Robot {
-  children [
-    Slot {
-      type "ZumoComSystem"
-      endPoint ZumoComSystem {
-        name "ZumoComSystem"
-        performanceMode TRUE
-      }
-    }
-  ]
-  controller "<none>"
+
+Zumo32U4 {
+  name "Zumo"
+  performanceMode TRUE
+  zumoComSystemSlot ZumoComSystem {
+    name "ZumoComSystem"
+    performanceMode TRUE
+  }
 }
