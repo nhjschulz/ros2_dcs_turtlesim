@@ -23,9 +23,6 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_package()
-
-
 if (NOT DEFINED ENV{DCS_HOME})
   message(FATAL_ERROR "Environment variable DCS_HOME not set. Please define it with path to DCS location.")
 else()
@@ -37,3 +34,13 @@ add_custom_target(DroidControlShip ALL
   COMMAND  $ENV{HOME}/.platformio/penv/bin/platformio run -e TurtleSim
   WORKING_DIRECTORY  $ENV{DCS_HOME}
 )
+
+# Install additional directories.
+install(DIRECTORY
+  launch
+  resource
+  worlds
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+ament_package()

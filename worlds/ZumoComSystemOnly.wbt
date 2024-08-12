@@ -1,0 +1,25 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/BlueAndi/RadonUlzer/release/v2.0.x/webots/protos/ZumoComSystem.proto"
+
+WorldInfo {
+  info [
+    "World for testing the ZumoComSystem alone."
+  ]
+  title "Track"
+  basicTimeStep 8
+}
+Viewpoint {
+}
+Robot {
+  children [
+    Slot {
+      type "ZumoComSystem"
+      endPoint ZumoComSystem {
+        name "ZumoComSystem"
+        performanceMode TRUE
+      }
+    }
+  ]
+  controller "<none>"
+}
