@@ -3,7 +3,7 @@ This project is a ROS2 Package wrapper for TurtleSim demo with
 DroidControlShip and RadonUlzer robots under Webots.
 
 These projects are build using PlatformIO. This package creates
-a ROS2 cmake wrapper around it and addes a launch configuration 
+a ROS2 cmake wrapper around it and adds a launch configuration 
 for the demo.
 
 ## Workspace Setup
@@ -18,8 +18,8 @@ repository there:
 
 ### Checkout the dependend PlatformIO projects
 
-Checkout the following PlatformIO projects as well to a fitting location.
-This should not be inside your ROS workspace, as these are no ROS2 
+Checkout the following PlatformIO projects to a fitting location.
+This should not be inside your ROS workspace, as these are not ROS2 
 packages:
 
 * RadonUlzer: https://github.com/BlueAndi/RadonUlzer
@@ -32,20 +32,20 @@ packages:
         git checkout feature/ROS2
 
 Add the following environment variables which tell `ros2_dcs_turtlesim`
-where the PlatformIO projects are are:
+where the PlatformIO based projects are:
 
-    $ export DCS_HOME=<checkout location of DroidControlShip>
-    $ export RU_HOME=<checkout location of RadonUlzer>
+        $ export DCS_HOME=<checkout location of DroidControlShip>
+        $ export RU_HOME=<checkout location of RadonUlzer>
 
 ## Building 
 
 Go into your ROS2 workspace and use the normal ROS2 commands for building
 
-    colcon build
-    source install/local_setup.bash
+        colcon build
+        source install/local_setup.bash
 
-To build only this package (and in verbos mode) use:
-
+The first build must be the complete workspace. Later it is possible to
+build only this package (and in verbose mode) use:
 
         colcon build --event-handlers console_direct+ --cmake-args -DCMAKE_VERBOSE_MAKEFILE=ON  --packages-select ros2_dcs_turtlesim
         source install/local_setup.bash
