@@ -26,10 +26,12 @@ import os
 import os.path
 import sys
 
+from ament_index_python.packages import get_package_share_directory
+
 import launch
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess
-from ament_index_python.packages import get_package_share_directory
+
 from webots_ros2_driver.webots_launcher import WebotsLauncher
 
 
@@ -40,42 +42,43 @@ def gen_exe_path(path) -> str:
 
     return path
 
+
 def arg_to_bool(arg):
     """Support parsing of bool arguments."""
     if isinstance(arg, bool):
         return arg
-    
+
     if arg.lower() in ('true', 'yes', '1', 'ok'):
         return True
-    
+
     return False
+
 
 def generate_launch_description():
     """Launch all components necessary for this demo."""
-
     package_dir = get_package_share_directory('ros2_dcs_turtlesim')
     wb_ros_ctrl_dir = get_package_share_directory('webots_ros2_driver')
-    
+
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument(
-        "--world", action="store",
+        '--world',
+        action='store',
         type=str,
         required=False,
         default=os.path.join(package_dir, 'worlds',  'minimal', 'DcsMinimal.wbt')
     )
     arg_parser.add_argument(
-        "--launch_webots",
+        '--launch_webots',
         type=arg_to_bool,
         nargs='?',
         const=True,
         default=True,
         required=False,
     )
-    launch_args = sys.argv[4:] # 4th arg onwards are the launcher specifc arguments
-    argv = [f"--{arg.replace(':=', '=')}" for arg in launch_args]  #ros2 arg:=val tp --arg=val
+    launch_args = sys.argv[4:]  # 4th+ arguments are the launcher specifc arguments
+    argv = [f"--{arg.replace(':=', '=')}" for arg in launch_args]  # ros2 arg:=val tp --arg=val
     my_args = arg_parser.parse_args(argv)
 
-    
     dcs_home = os.getenv('DCS_HOME')
     ru_home = os.getenv('RU_HOME')
 
@@ -100,7 +103,6 @@ def generate_launch_description():
         os.path.join(ru_home, '.pio', 'build', 'RemoteControlSim', 'program'))
     if not os.path.isfile(ru_path):
         sys.exit(f'RadonUlzer controller not found in {ru_path}')
-
 
     webots = None
     if my_args.launch_webots:
@@ -152,4 +154,3 @@ def generate_launch_description():
     actions.append(ru_controller)
 
     return LaunchDescription(actions)
-    

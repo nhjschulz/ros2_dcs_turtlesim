@@ -57,7 +57,7 @@ build only this package (and in verbose mode) use:
 
 The `ros2_dcs_turtlesim` includes a launch configuration. Run it using
 
-        ros2 launch ros2_dcs_turtlesim launch.py [world:=<path-to-world-file>] [launch_webots:=true|false]
+        ros2 launch ros2_dcs_turtlesim dcs_launch.py [world:=<path-to-world-file>] [launch_webots:=true|false]
 
 Running with launch_webots:=false only runs the external controllers. This is usefull after a reload
 of the world. Default is to launch webots as well.
