@@ -1,10 +1,12 @@
 # ros2_dcs_turtlesim
-This project is a ROS2 Package wrapper for TurtleSim demo with
+This project is a ROS2 Package wrapper for the TurtleSim demo with
 DroidControlShip and RadonUlzer robots under Webots.
 
-These projects are build using PlatformIO. This package creates
-a ROS2 cmake wrapper around it and adds a launch configuration 
-for the demo.
+![ZumoTurtle](ZumoTurtle.jpg)
+
+These robot projects are build using PlatformIO. The ros2_dcs_turtlesim
+package creates a ROS2 cmake wrapper around them and adds a launch
+configuration for the turtle demo.
 
 ## Workspace Setup
 
