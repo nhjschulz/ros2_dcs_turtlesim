@@ -21,6 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import argparse
 import os
 import os.path
 import sys
@@ -39,12 +40,42 @@ def gen_exe_path(path) -> str:
 
     return path
 
+def arg_to_bool(arg):
+    """Support parsing of bool arguments."""
+    if isinstance(arg, bool):
+        return arg
+    
+    if arg.lower() in ('true', 'yes', '1', 'ok'):
+        return True
+    
+    return False
 
 def generate_launch_description():
     """Launch all components necessary for this demo."""
+
     package_dir = get_package_share_directory('ros2_dcs_turtlesim')
     wb_ros_ctrl_dir = get_package_share_directory('webots_ros2_driver')
+    
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument(
+        "--world", action="store",
+        type=str,
+        required=False,
+        default=os.path.join(package_dir, 'worlds',  'minimal', 'DcsMinimal.wbt')
+    )
+    arg_parser.add_argument(
+        "--launch_webots",
+        type=arg_to_bool,
+        nargs='?',
+        const=True,
+        default=True,
+        required=False,
+    )
+    launch_args = sys.argv[4:] # 4th arg onwards are the launcher specifc arguments
+    argv = [f"--{arg.replace(':=', '=')}" for arg in launch_args]  #ros2 arg:=val tp --arg=val
+    my_args = arg_parser.parse_args(argv)
 
+    
     dcs_home = os.getenv('DCS_HOME')
     ru_home = os.getenv('RU_HOME')
 
@@ -70,11 +101,12 @@ def generate_launch_description():
     if not os.path.isfile(ru_path):
         sys.exit(f'RadonUlzer controller not found in {ru_path}')
 
-    # webots with predefined world
-    #
-    webots = WebotsLauncher(
-        world=os.path.join(package_dir, 'worlds', 'ZumoComSystemOnly.wbt')
-    )
+
+    webots = None
+    if my_args.launch_webots:
+        # webots with predefined world
+        #
+        webots = WebotsLauncher(world=my_args.world)
 
     # DroidControlship Launcher
     #
@@ -100,19 +132,24 @@ def generate_launch_description():
         name='RadonUlzerRC'
     )
 
-    # Run Forest, run ....
+    # construct launch description
     #
-    return LaunchDescription([
-        webots,
-        dcs_controller,
-        ru_controller,
-        launch.actions.RegisterEventHandler(
-            event_handler=launch.event_handlers.OnProcessExit(
-                target_action=webots,
-                on_exit=[
-                    launch.actions.EmitEvent(event=launch.events.Shutdown())
-                ],
+    actions = []
+    if webots:
+        actions.append(webots)
+        actions.append(
+            launch.actions.RegisterEventHandler(
+                event_handler=launch.event_handlers.OnProcessExit(
+                    target_action=webots,
+                    on_exit=[
+                        launch.actions.EmitEvent(event=launch.events.Shutdown())
+                    ],
+                )
             )
         )
-    ])
+
+    actions.append(dcs_controller)
+    actions.append(ru_controller)
+
+    return LaunchDescription(actions)
     
