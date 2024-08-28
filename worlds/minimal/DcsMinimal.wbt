@@ -35,8 +35,8 @@ Zumo32U4 {
   }
 }
 
-Robot {
-  name "Ros2Supervisor"
-  controller "<extern>"
-  supervisor TRUE
-}
+# Robot {
+#   name "Ros2Supervisor"
+#   controller "<extern>"
+#   supervisor TRUE
+# }
