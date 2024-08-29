@@ -21,7 +21,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import argparse
 import os
 import os.path
 import sys
@@ -30,12 +29,14 @@ from ament_index_python.packages import get_package_share_directory
 
 import launch
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess
+from launch.actions import DeclareLaunchArgument, ExecuteProcess, OpaqueFunction
+from launch.launch_description_entity import LaunchDescriptionEntity
+from launch.substitutions import LaunchConfiguration
 
 from webots_ros2_driver.webots_launcher import WebotsLauncher
 
 
-def gen_exe_path(path) -> str:
+def _gen_exe_path(path) -> str:
     """Decorate executables with .exe suffix on windows platform."""
     if os.name == 'nt':
         path = path + '.exe'
@@ -43,7 +44,7 @@ def gen_exe_path(path) -> str:
     return path
 
 
-def arg_to_bool(arg):
+def _arg_to_bool(arg):
     """Support parsing of bool arguments."""
     if isinstance(arg, bool):
         return arg
@@ -54,67 +55,46 @@ def arg_to_bool(arg):
     return False
 
 
-def handle_arguments(args: list[str]) -> argparse.Namespace:
-    """Process launcher specific arguments."""
-    package_dir = get_package_share_directory('ros2_dcs_turtlesim')
-
-    arg_parser = argparse.ArgumentParser()
-
-    arg_parser.add_argument(
-        '--world',
-        action='store',
-        type=str,
-        required=False,
-        default=os.path.join(package_dir, 'worlds',  'minimal', 'DcsMinimal.wbt')
-    )
-
-    arg_parser.add_argument(
-        '--launch_webots',
-        type=arg_to_bool,
-        nargs='?',
-        const=True,
-        default=True,
-        required=False,
-        help='Enable/disble launch of Webots process.'
-    )
-
-    arg_parser.add_argument(
-        '--launch_ru',
-        type=arg_to_bool,
-        nargs='?',
-        const=True,
-        default=True,
-        required=False,
-        help='Enable/disable launch of RadonUlzer process.'
-    )
-
-    arg_parser.add_argument(
-        '--launch_dcs',
-        type=arg_to_bool,
-        nargs='?',
-        const=True,
-        default=True,
-        required=False,
-        help='Enable/disable launch of DroidControlShip process.'
-    )
-
-    arg_parser.add_argument(
-        '--log_redirect',
-        type=arg_to_bool,
-        nargs='?',
-        const=True,
-        default=False,
-        required=False,
-    )
-
-    python_args = [f"--{arg.replace(':=', '=')}" for arg in args]  # ros2 arg:=val to --arg=val
-    return arg_parser.parse_args(python_args)
+def _define_launch_args() -> list[DeclareLaunchArgument]:
+    """Get launcher arguments definitions."""
+    return [
+        DeclareLaunchArgument(
+            name='world',
+            default_value=os.path.join(
+                get_package_share_directory('ros2_dcs_turtlesim'),
+                'worlds',  'minimal', 'DcsMinimal.wbt'
+            ),
+            description='Path to Webots world file'
+        ),
+        DeclareLaunchArgument(
+            name='launch_webots',
+            default_value='true',
+            description='Enable/disable launch of Webots process.'
+        ),
+        DeclareLaunchArgument(
+            name='launch_dcs',
+            default_value='true',
+            description='Enable/disable launch of DroidControlShip process.'
+        ),
+        DeclareLaunchArgument(
+            name='launch_ru',
+            default_value='true',
+            description='Enable/disable launch of RadonUlzer process.'
+        ),
+        DeclareLaunchArgument(
+            name='log_redirect',
+            default_value='false',
+            description='Enable/disable output redirection of Webots controllers.'
+        )
+    ]
 
 
-def generate_launch_description():
-    """Launch all components necessary for this demo."""
-    my_args = handle_arguments(sys.argv[4:])  # 4th+  are the launcher specifc.
+def _launch_setup(context) -> list[LaunchDescriptionEntity]:
+    """
+    Generate launch item list forr launch context.
 
+    See https://github.com/ros2/launch/blob/rolling/launch/launch/actions/opaque_function.py.
+    """
     dcs_home = os.getenv('DCS_HOME')
     ru_home = os.getenv('RU_HOME')
 
@@ -125,7 +105,7 @@ def generate_launch_description():
     if ru_home is None:
         sys.exit('RU_HOME environment variable not set.')
 
-    wb_ctrl_path = gen_exe_path(
+    wb_ctrl_path = _gen_exe_path(
         os.path.join(
             get_package_share_directory('webots_ros2_driver'),
             'scripts',
@@ -135,24 +115,25 @@ def generate_launch_description():
     if not os.path.isfile(wb_ctrl_path):
         sys.exit(f'webots_controller program not found in {wb_ctrl_path}')
 
-    dcs_path = gen_exe_path(
+    dcs_path = _gen_exe_path(
         os.path.join(dcs_home, '.pio', 'build', 'TurtleSim', 'program'))
     if not os.path.isfile(dcs_path):
         sys.exit(f'DroidControlShip controller not found in {dcs_path}')
 
-    ru_path = gen_exe_path(
+    ru_path = _gen_exe_path(
         os.path.join(ru_home, '.pio', 'build', 'RemoteControlSim', 'program'))
     if not os.path.isfile(ru_path):
         sys.exit(f'RadonUlzer controller not found in {ru_path}')
 
     webots = None
-    if my_args.launch_webots:
+    if _arg_to_bool(LaunchConfiguration('launch_webots').perform(context)):
         # webots with predefined world
         #
-        webots = WebotsLauncher(world=my_args.world)
+
+        webots = WebotsLauncher(world=LaunchConfiguration('world').perform(context))
 
     wb_controller_cmd = [wb_ctrl_path]
-    if my_args.log_redirect:
+    if _arg_to_bool(LaunchConfiguration('log_redirect').perform(context)):
         wb_controller_cmd += ['--stdout-redirect', '--stderr-redirect']
 
     # DroidControlship Launcher
@@ -193,10 +174,18 @@ def generate_launch_description():
             )
         )
 
-    if my_args.launch_dcs:
+    if _arg_to_bool(LaunchConfiguration('launch_dcs').perform(context)):
         actions.append(dcs_controller)
 
-    if my_args.launch_ru:
+    if _arg_to_bool(LaunchConfiguration('launch_ru').perform(context)):
         actions.append(ru_controller)
 
-    return LaunchDescription(actions)
+    return actions
+
+
+def generate_launch_description() -> LaunchDescription:
+    """Create launch description list."""
+    lds = LaunchDescription(_define_launch_args())
+    lds.add_action(OpaqueFunction(function=_launch_setup))
+
+    return lds
