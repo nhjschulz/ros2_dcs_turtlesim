@@ -172,6 +172,8 @@ def _launch_setup(context) -> list[LaunchDescriptionEntity]:
         cmd=wb_controller_cmd + [
             '--robot-name=Zumo',
             ru_path,
+            '-c',
+            '-v'
         ],
         condition=IfCondition(LaunchConfiguration('launch_ru'))
     )
