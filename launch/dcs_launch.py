@@ -159,6 +159,8 @@ def _launch_setup(context) -> list[LaunchDescriptionEntity]:
         cmd=wb_controller_cmd + [
             '--robot-name=ZumoComSystem',
             dcs_path,
+            '--cwd',
+            dcs_home,
             '--cfgFilePath',
             os.path.join(dcs_home, 'data', 'config', 'config.json')
         ],
@@ -172,6 +174,8 @@ def _launch_setup(context) -> list[LaunchDescriptionEntity]:
         cmd=wb_controller_cmd + [
             '--robot-name=Zumo',
             ru_path,
+            '--cwd',
+            ru_home,
             '-c',
             '-v'
         ],
