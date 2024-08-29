@@ -57,4 +57,14 @@ build only this package (and in verbose mode) use:
 
 The `ros2_dcs_turtlesim` includes a launch configuration. Run it using
 
-        ros2 launch ros2_dcs_turtlesim launch.py
+        ros2 launch ros2_dcs_turtlesim dcs_launch.py [args]
+
+Supported launcher arguments:
+
+| Argument      | Default              | Description          |
+|---------------|----------------------|----------------------|
+|world|world:=worlds/minimal/DcsMinimal.wbt| Launch Webots with given world file.|
+|launch_webots|launch_webots:=true| Enable/Disable launch of Webots.|
+|launch_ru|launch_ru:=true| Enable/Disable launch of RadonUlzer controller.|
+|launch_dcs|launch_dcs:=true| Enable/Disable launch of DroidControlShip controller.|
+|log_redirect|log_redirect:=false| Enable/Disable output redirection to Webots console.|
