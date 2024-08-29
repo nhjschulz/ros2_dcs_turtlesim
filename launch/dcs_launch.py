@@ -30,6 +30,7 @@ from ament_index_python.packages import get_package_share_directory
 import launch
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, OpaqueFunction
+from launch.conditions import IfCondition
 from launch.launch_description_entity import LaunchDescriptionEntity
 from launch.substitutions import LaunchConfiguration
 
@@ -82,6 +83,16 @@ def _define_launch_args() -> list[DeclareLaunchArgument]:
             description='Enable/disable launch of RadonUlzer process.'
         ),
         DeclareLaunchArgument(
+            name='launch_xrce',
+            default_value='false',
+            description='Enable/disable launch of the XRCE agent process.'
+        ),
+        DeclareLaunchArgument(
+            name='xrce_agent',
+            default_value='/usr/local/bin/MicroXRCEAgent udp4 -p 1883',
+            description='Define command line for XRCE agent.'
+        ),
+        DeclareLaunchArgument(
             name='log_redirect',
             default_value='false',
             description='Enable/disable output redirection of Webots controllers.'
@@ -125,11 +136,16 @@ def _launch_setup(context) -> list[LaunchDescriptionEntity]:
     if not os.path.isfile(ru_path):
         sys.exit(f'RadonUlzer controller not found in {ru_path}')
 
+    xrce_agent = ExecuteProcess(
+            name='XRCE-Agent',
+            cmd=LaunchConfiguration('xrce_agent').perform(context).split(),
+            condition=IfCondition(LaunchConfiguration('launch_xrce'))
+    )
+
     webots = None
     if _arg_to_bool(LaunchConfiguration('launch_webots').perform(context)):
         # webots with predefined world
         #
-
         webots = WebotsLauncher(world=LaunchConfiguration('world').perform(context))
 
     wb_controller_cmd = [wb_ctrl_path]
@@ -139,28 +155,31 @@ def _launch_setup(context) -> list[LaunchDescriptionEntity]:
     # DroidControlship Launcher
     #
     dcs_controller = ExecuteProcess(
+        name='DroidControlShip',
         cmd=wb_controller_cmd + [
             '--robot-name=ZumoComSystem',
             dcs_path,
             '--cfgFilePath',
             os.path.join(dcs_home, 'data', 'config', 'config.json')
         ],
-        name='DroidControlShip'
+        condition=IfCondition(LaunchConfiguration('launch_dcs'))
     )
 
     # RadonUlzer Launcher
     #
     ru_controller = ExecuteProcess(
+        name='RadonUlzerRC',
         cmd=wb_controller_cmd + [
             '--robot-name=Zumo',
             ru_path,
         ],
-        name='RadonUlzerRC'
+        condition=IfCondition(LaunchConfiguration('launch_ru'))
     )
 
     # construct launch description
     #
-    actions = []
+    actions = [xrce_agent]
+
     if webots:
         actions.append(webots)
         actions.append(
@@ -174,11 +193,8 @@ def _launch_setup(context) -> list[LaunchDescriptionEntity]:
             )
         )
 
-    if _arg_to_bool(LaunchConfiguration('launch_dcs').perform(context)):
-        actions.append(dcs_controller)
-
-    if _arg_to_bool(LaunchConfiguration('launch_ru').perform(context)):
-        actions.append(ru_controller)
+    actions.append(dcs_controller)
+    actions.append(ru_controller)
 
     return actions
 
