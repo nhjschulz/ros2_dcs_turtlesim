@@ -59,6 +59,9 @@ The `ros2_dcs_turtlesim` includes a launch configuration. Run it using
 
         ros2 launch ros2_dcs_turtlesim dcs_launch.py [args]
 
+> [!NOTE]
+> The argument ```launch_xrce:=true``` is required unless the xrce agent is already running as a demon or in another terminal.
+
 Supported launcher arguments:
 
 | Argument      | Default              | Description          |
@@ -74,6 +77,6 @@ Supported launcher arguments:
 ## Controlling the Robot
 
 The robot listens to Twist messages similar to the ROS2 TurtleSim demo. The ```turtle_teleop_key``` tool can be used
-to control it using the keyboard. Use the following command form a second terminal window for controlling the robot:
+to control it using the keyboard. Use the following command from a second terminal window for controlling the robot:
 
         ros2 run turtlesim turtle_teleop_key --ros-args --remap turtle1/cmd_vel:=/cmd_vel
