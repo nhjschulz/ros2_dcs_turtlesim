@@ -70,3 +70,10 @@ Supported launcher arguments:
 |launch_xrce|launch_xrce:=false| Enable/disable launch of the XRCE agent process.|
 |xrce_agent|xrce_agent:='/usr/local/bin/MicroXRCEAgent udp4 -p 1883'|Define command line for XRCE agent.|
 |log_redirect|log_redirect:=false| Enable/Disable output redirection of Webots controllers to Webots console.|
+
+## Controlling the Robot
+
+The robot listens to Twist messages similar to the ROS2 TurtleSim demo. The ```turtle_teleop_key``` tool can be used
+to control it using the keyboard. Use the following command form a second terminal window for controlling the robot:
+
+        ros2 run turtle_teleop_key --ros-args --remap turtle1/cmd_vel:=/cmd_vel
