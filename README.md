@@ -67,4 +67,6 @@ Supported launcher arguments:
 |launch_webots|launch_webots:=true| Enable/Disable launch of Webots.|
 |launch_ru|launch_ru:=true| Enable/Disable launch of RadonUlzer controller.|
 |launch_dcs|launch_dcs:=true| Enable/Disable launch of DroidControlShip controller.|
-|log_redirect|log_redirect:=false| Enable/Disable output redirection to Webots console.|
+|launch_xrce|launch_xrce:=false| Enable/disable launch of the XRCE agent process.|
+|xrce_agent|xrce_agent:='/usr/local/bin/MicroXRCEAgent udp4 -p 1883'|Define command line for XRCE agent.|
+|log_redirect|log_redirect:=false| Enable/Disable output redirection of Webots controllers to Webots console.|
