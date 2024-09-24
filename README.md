@@ -1,6 +1,6 @@
 # ros2_dcs_turtlesim
 This project is a ROS2 Package wrapper for the TurtleSim demo with
-DroidControlShip and RadonUlzer robots under Webots.
+DroidControlShip (DCS) and RadonUlzer (RU) robots under Webots.
 
 ![ZumoTurtle](ZumoTurtle.jpg)
 
@@ -33,11 +33,16 @@ packages:
         cd DroidControlShip
         git checkout feature/ROS2
 
+* Link the micro-ROS library to the lib folder of DCS
+
+        cd DroidControlShip/lib
+        ln -s ~/microros_ws/firmware/build libmicroros
+
 Add the following environment variables which tell `ros2_dcs_turtlesim`
 where the PlatformIO based projects are:
 
-        $ export DCS_HOME=<checkout location of DroidControlShip>
-        $ export RU_HOME=<checkout location of RadonUlzer>
+        export DCS_HOME=<checkout location of DroidControlShip>
+        export RU_HOME=<checkout location of RadonUlzer>
 
 ## Building 
 
@@ -52,6 +57,9 @@ build only this package (and in verbose mode) use:
         colcon build --event-handlers console_direct+ --cmake-args -DCMAKE_VERBOSE_MAKEFILE=ON  --packages-select ros2_dcs_turtlesim
         source install/local_setup.bash
 
+> [!NOTE]
+> If you get error ```fatal error: rcl/rcl.h: No such file or directory```, you forgot to link the micro-ROS library into
+> the DCS workspace.
 
 ## Launching
 
