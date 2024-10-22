@@ -89,7 +89,7 @@ def _define_launch_args() -> list[DeclareLaunchArgument]:
         ),
         DeclareLaunchArgument(
             name='xrce_agent',
-            default_value='/usr/local/bin/MicroXRCEAgent udp4 -p 1883',
+            default_value='/usr/local/bin/MicroXRCEAgent udp4 -p 8888',
             description='Define command line for XRCE agent.'
         ),
         DeclareLaunchArgument(
