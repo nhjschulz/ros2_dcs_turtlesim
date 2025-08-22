@@ -1,6 +1,8 @@
 # ros2_dcs_turtlesim
 This project is a ROS2 Package wrapper for the TurtleSim demo with
-DroidControlShip (DCS) and RadonUlzer (RU) robots under Webots.
+[DroidControlShip (DCS)](https://github.com/BlueAndi/DroidControlShip)
+and [RadonUlzer (RU) ](https://github.com/BlueAndi/RadonUlzer) robots
+under Webots.
 
 ![ZumoTurtle](ZumoTurtle.jpg)
 
@@ -25,7 +27,7 @@ This should not be inside your ROS workspace, as these are not ROS2
 packages:
 
 * RadonUlzer: https://github.com/BlueAndi/RadonUlzer
-* DroidControlShip: https://github.com/BlueAndi/DroidControlShip (Branch feature/ROS2)
+* DroidControlShip: https://github.com/BlueAndi/DroidControlShip
 
     
         git clone https://github.com/BlueAndi/RadonUlzer
