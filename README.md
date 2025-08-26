@@ -29,11 +29,8 @@ packages:
 * RadonUlzer: https://github.com/BlueAndi/RadonUlzer
 * DroidControlShip: https://github.com/BlueAndi/DroidControlShip
 
-    
         git clone https://github.com/BlueAndi/RadonUlzer
         git clone https://github.com/BlueAndi/DroidControlShip
-        cd DroidControlShip
-        git checkout feature/ROS2
 
 * Link the micro-ROS library to the lib folder of DCS
 
@@ -46,7 +43,7 @@ where the PlatformIO based projects are:
         export DCS_HOME=<checkout location of DroidControlShip>
         export RU_HOME=<checkout location of RadonUlzer>
 
-## Building 
+## Building
 
 Go into your ROS2 workspace and use the normal ROS2 commands for building
 
@@ -78,10 +75,11 @@ Supported launcher arguments:
 |---------------|----------------------|----------------------|
 |world|world:=worlds/minimal/DcsMinimal.wbt| Launch Webots with given world file.|
 |launch_webots|launch_webots:=true| Enable/Disable launch of Webots.|
+|wb_controller_args|wb_controller_args=""| Specify additional webots-controller launcher arguments.|
 |launch_ru|launch_ru:=true| Enable/Disable launch of RadonUlzer controller.|
 |launch_dcs|launch_dcs:=true| Enable/Disable launch of DroidControlShip controller.|
 |launch_xrce|launch_xrce:=false| Enable/disable launch of the XRCE agent process.|
-|xrce_agent|xrce_agent:='/usr/local/bin/MicroXRCEAgent tcp4 -p 1883'|Define command line for XRCE agent.|
+|xrce_agent|xrce_agent:='/usr/local/bin/MicroXRCEAgent tcp4 -p 8888'|Define command line for XRCE agent.|
 |log_redirect|log_redirect:=false| Enable/Disable output redirection of Webots controllers to Webots console.|
 
 ## Controlling the Robot

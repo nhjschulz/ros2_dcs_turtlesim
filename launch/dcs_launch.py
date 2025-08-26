@@ -1,7 +1,7 @@
 """DroidControlShip Launch Configuration for Webots."""
 # MIT License
 #
-# Copyright (c) 2024 Norbert Schulz
+# Copyright (c) 2024-2025 Norbert Schulz
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the 'Software'), to deal
@@ -82,6 +82,11 @@ def _define_launch_args() -> list[DeclareLaunchArgument]:
             default_value='true',
             description='Enable/disable launch of RadonUlzer process.'
         ),
+         DeclareLaunchArgument(
+            name='wb_controller_args',
+            default_value='',
+            description='Specify webots-controller arguments.'
+        ),
         DeclareLaunchArgument(
             name='launch_xrce',
             default_value='false',
@@ -148,7 +153,14 @@ def _launch_setup(context) -> list[LaunchDescriptionEntity]:
         #
         webots = WebotsLauncher(world=LaunchConfiguration('world').perform(context))
 
+
+    # Build arguments for webots-controller launcher tool.
+    #
     wb_controller_cmd = [wb_ctrl_path]
+    wb_controller_args = LaunchConfiguration('wb_controller_args').perform(context).split()
+    if wb_controller_args:
+        wb_controller_cmd += wb_controller_args
+
     if _arg_to_bool(LaunchConfiguration('log_redirect').perform(context)):
         wb_controller_cmd += ['--stdout-redirect', '--stderr-redirect']
 
