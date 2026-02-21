@@ -189,7 +189,9 @@ def _launch_setup(context) -> list[LaunchDescriptionEntity]:
             '--cwd',
             ru_home,
             '-c',
-            '-v'
+            '-v',
+            '--settingsPath',
+            os.path.join(ru_home, 'settings', 'settings.json')
         ],
         condition=IfCondition(LaunchConfiguration('launch_ru'))
     )
